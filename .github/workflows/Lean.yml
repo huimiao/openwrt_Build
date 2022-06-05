@@ -33,7 +33,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [matrix]
+        target: [nanopi-r2s]
     
     steps:
     - name: 检查
