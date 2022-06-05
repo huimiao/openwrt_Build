@@ -88,13 +88,12 @@ jobs:
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         chmod +x ./customize.sh && ./customize.sh
         cd openwrt
-        cp -f feeds/smpackage/diy/default-settings package/emortal/default-settings/files/99-default-settings
-        sed -i 's/v$date1/May/g' package/emortal/default-settings/files/99-default-settings
-        cp -f feeds/smpackage/diy/banner package/emortal/default-settings/files/openwrt_banner
-        sed -i 's/%D %V, %C/openwrt May by kenzo/g' package/emortal/default-settings/files/openwrt_banner
+        cp -f feeds/smpackage/diy/default-settings package/lean/default-settings/files/zzz-default-settings
+        sed -i 's/v$date1/May/g' package/lean/default-settings/files/zzz-default-settings
         cp -f feeds/smpackage/diy/banner package/base-files/files/etc/banner
         sed -i 's/%D %V, %C/openwrt May by kenzo/g' package/base-files/files/etc/banner
-        cp -f feeds/smpackage/diy/index_x86.htm package/emortal/autocore/files/generic/index.htm         
+        cp -f feeds/smpackage/diy/index_x86.htm package/lean/autocore/files/x86/index.htm
+        patch -p1 < "feeds/smpackage/diy/patches/prereq-build_new.patch"
         cp -f feeds/smpackage/diy/${{matrix.target}}.config .config && make defconfig
       
     - name: 下载包文件
@@ -139,10 +138,10 @@ jobs:
         echo "v${{ env.date4 }}" > version.txt
         md5=$((md5sum *squashfs-sysupgrade* || md5sum *squashfs-combined-efi*) | awk '{print $1}') 2>/dev/null
         echo $md5 >> version.txt
-        rename -v "s/^immortalwrt/${{ env.VERSION }}-openwrt/" * || true
+        rename -v "s/^openwrt/${{ env.VERSION }}-openwrt/" * || true
         rename -v "s/friendlyarm_//" *gz || true
         echo $md5 >> version.txt
-        echo ${{matrix.target}} >> version.txt     
+        echo ${{matrix.target}} >> version.txt
         rm -rf sha256sums
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         
